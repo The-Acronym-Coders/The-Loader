@@ -2,7 +2,6 @@ package com.teamacronymcoders.theloader;
 
 import net.minecraft.resources.*;
 
-import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.File;
 import java.io.FileFilter;

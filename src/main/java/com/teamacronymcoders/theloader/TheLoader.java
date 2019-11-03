@@ -2,7 +2,9 @@ package com.teamacronymcoders.theloader;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.FolderPackFinder;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -26,12 +28,22 @@ public class TheLoader {
 
     public TheLoader() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
         MinecraftForge.EVENT_BUS.addListener(this::setupDataPackFinder);
 
         this.theLoaderDirectory = new File(".", "the_loader");
         this.dataDirectory = new File(theLoaderDirectory, "datapacks");
         this.resourceDirectory = new File(theLoaderDirectory, "resourcepacks");
+
+        try {
+            Files.createDirectories(theLoaderDirectory.toPath());
+            Files.createDirectories(dataDirectory.toPath());
+            Files.createDirectories(resourceDirectory.toPath());
+        } catch (IOException e) {
+            LOGGER.error("Tried to create Folders", e);
+        }
+
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> () ->
+                Minecraft.getInstance().getResourcePackList().addPackFinder(new AlwaysEnabledFolderPackFinder(resourceDirectory)));
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
@@ -46,9 +58,5 @@ public class TheLoader {
 
     private void setupDataPackFinder(FMLServerAboutToStartEvent event) {
         event.getServer().getResourcePacks().addPackFinder(new AlwaysEnabledFolderPackFinder(dataDirectory));
-    }
-
-    private void clientSetup(FMLClientSetupEvent event) {
-        Minecraft.getInstance().getResourcePackList().addPackFinder(new AlwaysEnabledFolderPackFinder(resourceDirectory));
     }
 }
