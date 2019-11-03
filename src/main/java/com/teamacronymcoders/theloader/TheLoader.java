@@ -45,10 +45,10 @@ public class TheLoader {
     }
 
     private void setupDataPackFinder(FMLServerAboutToStartEvent event) {
-        event.getServer().getResourcePacks().addPackFinder(new FolderPackFinder(dataDirectory));
+        event.getServer().getResourcePacks().addPackFinder(new AlwaysEnabledFolderPackFinder(dataDirectory));
     }
 
     private void clientSetup(FMLClientSetupEvent event) {
-        Minecraft.getInstance().getResourcePackList().addPackFinder(new FolderPackFinder(resourceDirectory));
+        Minecraft.getInstance().getResourcePackList().addPackFinder(new AlwaysEnabledFolderPackFinder(resourceDirectory));
     }
 }
