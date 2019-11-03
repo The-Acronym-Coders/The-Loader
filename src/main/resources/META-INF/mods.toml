@@ -1,0 +1,12 @@
+modLoader="javafml"
+loaderVersion="[28,)"
+issueTrackerURL="https://github.com/The-Acronym-Coders/The Loader/issues"
+
+[[mods]]
+    modId="theloader"
+    version="${file.jarVersion}"
+    displayName="The Loader"
+    authors="SkySom"
+    description='''
+        Loads Data and Resource Packs from the main Minecraft folder
+    '''
