@@ -1,15 +1,11 @@
 package com.teamacronymcoders.theloader;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.FolderPackFinder;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,15 +18,13 @@ public class TheLoader {
     public static final String ID = "theloader";
     public static final Logger LOGGER = LogManager.getLogger(ID);
 
-    private final File theLoaderDirectory;
     private final File dataDirectory;
     private final File resourceDirectory;
 
     public TheLoader() {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
         MinecraftForge.EVENT_BUS.addListener(this::setupDataPackFinder);
 
-        this.theLoaderDirectory = new File(".", "the_loader");
+        File theLoaderDirectory = new File(".", "the_loader");
         this.dataDirectory = new File(theLoaderDirectory, "datapacks");
         this.resourceDirectory = new File(theLoaderDirectory, "resourcepacks");
 
@@ -42,18 +36,13 @@ public class TheLoader {
             LOGGER.error("Tried to create Folders", e);
         }
 
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> () ->
-                Minecraft.getInstance().getResourcePackList().addPackFinder(new AlwaysEnabledFolderPackFinder(resourceDirectory)));
-    }
-
-    private void commonSetup(FMLCommonSetupEvent event) {
-        try {
-            Files.createDirectories(theLoaderDirectory.toPath());
-            Files.createDirectories(dataDirectory.toPath());
-            Files.createDirectories(resourceDirectory.toPath());
-        } catch (IOException e) {
-            LOGGER.error("Tried to create Folders", e);
-        }
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
+            //During RunData it is null
+            //noinspection ConstantConditions
+            if (Minecraft.getInstance() != null) {
+                Minecraft.getInstance().getResourcePackList().addPackFinder(new AlwaysEnabledFolderPackFinder(resourceDirectory));
+            }
+        });
     }
 
     private void setupDataPackFinder(FMLServerAboutToStartEvent event) {
