@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[28,)"
+loaderVersion="[32,)"
 issueTrackerURL="https://github.com/The-Acronym-Coders/The Loader/issues"
 
 [[mods]]
@@ -10,3 +10,10 @@ issueTrackerURL="https://github.com/The-Acronym-Coders/The Loader/issues"
     description='''
         Loads Data and Resource Packs from the main Minecraft folder
     '''
+
+[[dependencies.theloader]]
+    modId="forge"
+    mandatory=true
+    versionRange="[32.0.68,)"
+    ordering="NONE"
+    side="BOTH"

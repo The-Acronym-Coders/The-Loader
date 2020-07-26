@@ -4,8 +4,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModLoader;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.javafmlmod.FMLModContainer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,13 +40,11 @@ public class TheLoader {
             LOGGER.error("Tried to create Folders", e);
         }
 
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
-            //During RunData it is null
-            //noinspection ConstantConditions
-            if (Minecraft.getInstance() != null) {
-                Minecraft.getInstance().getResourcePackList().addPackFinder(new AlwaysEnabledFolderPackFinder(resourceDirectory));
-            }
-        });
+        //During RunData it is null
+        //noinspection ConstantConditions
+        if (Minecraft.getInstance() != null) {
+            Minecraft.getInstance().getResourcePackList().addPackFinder(new AlwaysEnabledFolderPackFinder(resourceDirectory));
+        }
     }
 
     private void setupDataPackFinder(FMLServerAboutToStartEvent event) {

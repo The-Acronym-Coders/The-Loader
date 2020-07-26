@@ -7,14 +7,16 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class AlwaysEnabledFolderPackFinder implements IPackFinder {
-    private static final FileFilter FILE_FILTER = (p_195731_0_) -> {
-        boolean lvt_1_1_ = p_195731_0_.isFile() && p_195731_0_.getName().endsWith(".zip");
-        boolean lvt_2_1_ = p_195731_0_.isDirectory() && (new File(p_195731_0_, "pack.mcmeta")).isFile();
-        return lvt_1_1_ || lvt_2_1_;
+    private static final IPackNameDecorator THE_LOADER = IPackNameDecorator.create("pack.theloader");
+
+    private static final FileFilter FILE_FILTER = (file) -> {
+        boolean isZip = file.isFile() && file.getName().endsWith(".zip");
+        boolean isFolderWithMeta = file.isDirectory() && (new File(file, "pack.mcmeta")).isFile();
+        return isZip || isFolderWithMeta;
     };
     private final File folder;
 
@@ -24,7 +26,7 @@ public class AlwaysEnabledFolderPackFinder implements IPackFinder {
 
     @Override
     @ParametersAreNonnullByDefault
-    public <T extends ResourcePackInfo> void addPackInfosToMap(Map<String, T> packInfo, ResourcePackInfo.IFactory<T> factory) {
+    public <T extends ResourcePackInfo> void func_230230_a_(Consumer<T> packConsumer, ResourcePackInfo.IFactory<T> factory) {
         if (!folder.isDirectory()) {
             try {
                 Files.createDirectories(folder.toPath());
@@ -36,10 +38,11 @@ public class AlwaysEnabledFolderPackFinder implements IPackFinder {
         File[] packFiles = this.folder.listFiles(FILE_FILTER);
         if (packFiles != null) {
             for (File packFile : packFiles) {
-                String packName = "the_loader/" + packFile.getName();
-                T resourcePackInfo = ResourcePackInfo.createResourcePack(packName, true, this.makePackSupplier(packFile), factory, ResourcePackInfo.Priority.TOP);
+                T resourcePackInfo = ResourcePackInfo.createResourcePack(packFile.getName(), true,
+                        this.makePackSupplier(packFile), factory, ResourcePackInfo.Priority.TOP,
+                        IPackNameDecorator.field_232625_a_);
                 if (resourcePackInfo != null) {
-                    packInfo.put(packName, resourcePackInfo);
+                    packConsumer.accept(resourcePackInfo);
                 }
             }
 
